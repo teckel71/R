@@ -9,7 +9,7 @@ MATout(data, variable)
 \arguments{
 \item{data}{Dataframe que contiene los datos a analizar.}
 
-\item{variable}{Nombre de la variable continua a analizar (como un string).}
+\item{variable}{Variable continua a analizar (sin comillas).}
 }
 \value{
 La función crea dos objetos en el entorno global:
@@ -31,8 +31,8 @@ Devuelve un dataframe sin los outliers y genera un gráfico de caja y una tabla 
 # Crear un dataframe de ejemplo
 datos <- data.frame(altura = c(160, 165, 170, 200, 180, 175, 400))
 
-# Detectar outliers en la variable "altura"
-MATout(datos, "altura")
+# Detectar outliers en la variable altura
+MATout(datos, altura)
 }
 
 }

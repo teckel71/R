@@ -1,0 +1,26 @@
+Package: MATmv
+Title: Manejo y Análisis de Tablas Multivariadas
+Version: 0.1.0
+Authors@R: c(
+    person("Tu Nombre", "Apellido",
+           email = "tu.email@ejemplo.com",
+           role = c("aut", "cre"))
+)
+Description: Este paquete proporciona la función `MATmv()`, que facilita el manejo y
+    análisis de columnas seleccionadas en dataframes. La función permite seleccionar
+    variables, identificar y manejar casos con datos faltantes, generar tablas HTML
+    con los casos faltantes, y crear gráficos para visualizar la estructura de los
+    datos faltantes. Diseñado para análisis estadísticos rápidos y efectivos.
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.3
+Imports:
+    naniar,
+    kableExtra
+Suggests:
+    testthat (>= 3.0.0),
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr

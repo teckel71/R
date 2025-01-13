@@ -1,0 +1,13 @@
+# Exportar las funciones definidas en el paquete
+export(MATmv)
+export(MATout)
+export(MATout_Mahalanobis)
+
+# Importar funciones específicas de paquetes utilizados
+importFrom(dplyr, filter, mutate, select, all_of)
+importFrom(ggplot2, ggplot, aes, geom_boxplot, ylab, ggtitle)
+importFrom(knitr, kable)
+importFrom(kableExtra, kable_styling)
+importFrom(magrittr, `%>%`)
+importFrom(stats, mahalanobis, quantile, cov, complete.cases, colMeans)
+importFrom(visdat, vis_miss)

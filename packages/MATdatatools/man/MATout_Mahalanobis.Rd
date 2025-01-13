@@ -9,7 +9,7 @@ MATout_Mahalanobis(data, variables)
 \arguments{
 \item{data}{Dataframe que contiene los datos a analizar.}
 
-\item{variables}{Vector de nombres de las variables a incluir en el análisis (como strings).}
+\item{variables}{Variables a incluir en el análisis (sin comillas, separadas por comas).}
 }
 \value{
 La función crea dos objetos en el entorno global:
@@ -31,8 +31,8 @@ Genera un dataframe sin los outliers y proporciona un gráfico de caja y una tab
 # Crear un dataframe de ejemplo
 datos <- data.frame(x = rnorm(100), y = rnorm(100))
 
-# Detectar outliers multivariados considerando las variables "x" y "y"
-MATout_Mahalanobis(datos, c("x", "y"))
+# Detectar outliers multivariados considerando las variables x y y
+MATout_Mahalanobis(datos, x, y)
 }
 
 }

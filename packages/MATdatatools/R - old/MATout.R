@@ -4,7 +4,7 @@
 #' Devuelve un dataframe sin los outliers y genera un gráfico de caja y una tabla con los casos identificados como outliers.
 #'
 #' @param data Dataframe que contiene los datos a analizar.
-#' @param variable Variable continua a analizar (sin comillas).
+#' @param variable Nombre de la variable continua a analizar (como un string).
 #'
 #' @return
 #' La función crea dos objetos en el entorno global:
@@ -22,8 +22,8 @@
 #' # Crear un dataframe de ejemplo
 #' datos <- data.frame(altura = c(160, 165, 170, 200, 180, 175, 400))
 #'
-#' # Detectar outliers en la variable altura
-#' MATout(datos, altura)
+#' # Detectar outliers en la variable "altura"
+#' MATout(datos, "altura")
 #' }
 #'
 #' @import dplyr ggplot2 knitr kableExtra
@@ -40,11 +40,8 @@ MATout <- function(data, variable) {
   library(knitr)
   library(kableExtra)
 
-  # Convertir la variable a texto si no lo es
-  variable <- deparse(substitute(variable))
-
   # Comprobar que el dataframe y la variable existen
-  if (!is.data.frame(data)) stop("El primer argumento debe ser un dataframe.")
+  if (!exists("data")) stop("El dataframe especificado no existe.")
   if (!variable %in% colnames(data)) stop("La variable especificada no existe en el dataframe.")
 
   # Verificar si hay valores NA en la variable

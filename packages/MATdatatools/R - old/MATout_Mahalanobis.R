@@ -4,7 +4,7 @@
 #' Genera un dataframe sin los outliers y proporciona un gráfico de caja y una tabla con los casos detectados como outliers.
 #'
 #' @param data Dataframe que contiene los datos a analizar.
-#' @param variables Variables a incluir en el análisis (sin comillas, separadas por comas).
+#' @param variables Vector de nombres de las variables a incluir en el análisis (como strings).
 #'
 #' @return
 #' La función crea dos objetos en el entorno global:
@@ -22,8 +22,8 @@
 #' # Crear un dataframe de ejemplo
 #' datos <- data.frame(x = rnorm(100), y = rnorm(100))
 #'
-#' # Detectar outliers multivariados considerando las variables x y y
-#' MATout_Mahalanobis(datos, x, y)
+#' # Detectar outliers multivariados considerando las variables "x" y "y"
+#' MATout_Mahalanobis(datos, c("x", "y"))
 #' }
 #'
 #' @import dplyr ggplot2 knitr kableExtra
@@ -39,9 +39,6 @@ MATout_Mahalanobis <- function(data, variables) {
   library(ggplot2)
   library(knitr)
   library(kableExtra)
-
-  # Convertir nombres de variables a texto si no lo son
-  variables <- sapply(substitute(variables)[-1], deparse)
 
   # Obtener el nombre del dataframe de entrada
   original_name <- deparse(substitute(data))
