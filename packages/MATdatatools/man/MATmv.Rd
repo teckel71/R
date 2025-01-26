@@ -9,12 +9,26 @@ MATmv(dataframe, columnas)
 \arguments{
 \item{dataframe}{Un dataframe que contiene las variables.}
 
-\item{columnas}{Las columnas que se desean seleccionar.}
+\item{columnas}{Las columnas que se desean seleccionar. Puede ser una sola variable (sin comillas)
+o un vector de variables.}
 }
 \value{
 El nombre del nuevo dataframe con los casos completos.
 }
 \description{
 Esta función selecciona variables de un dataframe, identifica casos completos y crea un resumen
-con información sobre los datos faltantes.
+con información sobre los datos faltantes. Ahora también permite seleccionar una sola variable
+sin necesidad de usar \code{c(...)}.
+}
+\details{
+La función genera un nuevo dataframe con los casos completos de las columnas seleccionadas
+y una lista de información en el entorno global. La lista contiene una tabla con los datos faltantes
+y un gráfico que visualiza los valores faltantes.
+}
+\examples{
+# Usar una sola variable:
+MATmv(dataframe = mtcars, columnas = mpg)
+
+# Usar varias variables:
+MATmv(dataframe = mtcars, columnas = c(mpg, hp))
 }

@@ -1,11 +1,22 @@
 #' MATmv: Manejo de datos con casos completos y NA
 #'
 #' Esta función selecciona variables de un dataframe, identifica casos completos y crea un resumen
-#' con información sobre los datos faltantes.
+#' con información sobre los datos faltantes. Ahora también permite seleccionar una sola variable
+#' sin necesidad de usar `c(...)`.
 #'
 #' @param dataframe Un dataframe que contiene las variables.
-#' @param columnas Las columnas que se desean seleccionar.
+#' @param columnas Las columnas que se desean seleccionar. Puede ser una sola variable (sin comillas)
+#'   o un vector de variables.
 #' @return El nombre del nuevo dataframe con los casos completos.
+#' @details La función genera un nuevo dataframe con los casos completos de las columnas seleccionadas
+#'   y una lista de información en el entorno global. La lista contiene una tabla con los datos faltantes
+#'   y un gráfico que visualiza los valores faltantes.
+#' @examples
+#' # Usar una sola variable:
+#' MATmv(dataframe = mtcars, columnas = mpg)
+#'
+#' # Usar varias variables:
+#' MATmv(dataframe = mtcars, columnas = c(mpg, hp))
 #' @export
 MATmv <- function(dataframe, columnas) {
 
@@ -21,7 +32,12 @@ MATmv <- function(dataframe, columnas) {
   library(kableExtra)
 
   # Convertir nombres de columnas a texto si no lo son
-  columnas <- sapply(substitute(columnas)[-1], deparse)
+  columnas <- substitute(columnas)
+  if (length(columnas) == 1) {
+    columnas <- as.character(columnas)
+  } else {
+    columnas <- sapply(columnas[-1], deparse)
+  }
 
   # Verificar que el dataframe sea válido
   if (!is.data.frame(dataframe)) {
