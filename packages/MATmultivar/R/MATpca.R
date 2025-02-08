@@ -11,11 +11,16 @@
 #' @import dplyr ggplot2 patchwork knitr kableExtra rlang
 #' @export
 MATpca <- function(data, ...) {
-  required_packages <- c("dplyr", "ggplot2", "patchwork", "knitr", "kableExtra", "rlang")
-  lapply(required_packages, function(pkg) {
-    if (!requireNamespace(pkg, quietly = TRUE)) install.packages(pkg)
-  })
+  # Comprobar e instalar paquetes necesarios dentro de la función
+  paquetes_necesarios <- c("dplyr", "ggplot2", "patchwork", "knitr", "kableExtra", "rlang")
   
+  for (paquete in paquetes_necesarios) {
+    if (!requireNamespace(paquete, quietly = TRUE)) {
+      install.packages(paquete)
+    }
+  }
+  
+  # Cargar librerías
   library(dplyr)
   library(ggplot2)
   library(patchwork)
@@ -23,24 +28,90 @@ MATpca <- function(data, ...) {
   library(kableExtra)
   library(rlang)
   
+  # Capturar las variables seleccionadas sin necesidad de comillas
   variables <- rlang::quos(...)
-  selected_data <- if (length(variables) == 0) data %>% select(where(is.numeric)) else data %>% select(!!!variables)
   
-  if (ncol(selected_data) < 2) stop("Se necesitan al menos dos variables numéricas para realizar el PCA.")
+  if (length(variables) == 0) {
+    # Si no se especifican variables, seleccionar solo las métricas
+    selected_data <- data %>% select(where(is.numeric))
+  } else {
+    # Seleccionar las variables especificadas
+    selected_data <- data %>% select(!!!variables)
+  }
   
+  # Verificar si hay suficientes variables métricas para el análisis
+  if (ncol(selected_data) < 2) {
+    stop("Se necesitan al menos dos variables numéricas para realizar el análisis de componentes principales.")
+  }
+  
+  # Análisis de Componentes Principales con escalado
   pca_result <- prcomp(selected_data, scale = TRUE)
+  
+  # Generar resumen de componentes
   summary_df <- as.data.frame(t(pca_result$sdev^2 / sum(pca_result$sdev^2) * 100))
   colnames(summary_df) <- paste0("PC", 1:ncol(summary_df))
-  summary_df <- rbind("Desviación típica" = pca_result$sdev, "Proporción de varianza" = summary_df[1, ], "Varianza acumulada" = cumsum(summary_df[1, ]))
+  summary_df <- rbind(
+    "Desviación típica" = pca_result$sdev,
+    "Proporción de varianza" = summary_df[1, ],
+    "Varianza acumulada" = cumsum(summary_df[1, ])
+  )
   
+  # Crear tabla con kable
   tabla_resumen <- summary_df %>%
-    kable(caption = "Resumen de Componentes", format.args = list(decimal.mark = ".", digits = 4)) %>%
-    kable_styling(bootstrap_options = c("striped", "bordered"), full_width = FALSE)
+    kable(caption = "Resumen de Componentes",
+          format.args = list(decimal.mark = ".", digits = 4)) %>%
+    kable_styling(bootstrap_options = c("striped", "bordered", "condensed"),
+                  full_width = FALSE, position = "center") %>%
+    row_spec(0, bold= TRUE, align = "c") %>%
+    column_spec(1, bold = TRUE, extra_css = "text-align: left;")
   
+  # Cargas de componentes
+  cargas <- as.data.frame(pca_result$rotation)
+  tabla_cargas <- cargas %>%
+    kable(caption = "Cargas de las Componentes",
+          format.args = list(decimal.mark = ".", digits = 4)) %>%
+    kable_styling(bootstrap_options = c("striped", "bordered", "condensed"),
+                  full_width = FALSE, position = "center") %>%
+    row_spec(0, bold= TRUE, align = "c") %>%
+    column_spec(1, bold = TRUE, extra_css = "text-align: left;")
+  
+  # Autovalores
+  autovalores <- data.frame(
+    Componente = 1:length(pca_result$sdev),
+    Autovalor = pca_result$sdev^2
+  )
+  
+  autograph <- ggplot(autovalores, aes(x = Componente, y = Autovalor)) +
+    geom_bar(stat = "identity", colour = "red", fill = "orange", alpha = 0.7) +
+    scale_x_continuous(breaks = 1:nrow(autovalores)) +
+    geom_hline(yintercept = 1, colour = "darkblue") +
+    geom_text(aes(label = round(Autovalor, 2)), vjust = -0.5, colour = "darkblue", size = 3) +
+    ggtitle("Autovalores de las Componentes") +
+    xlab("Número de Componente") +
+    ylab("Autovalor")
+  
+  # Varianza acumulada
+  autovalores <- autovalores %>%
+    mutate(Varianza_Acumulada = cumsum(Autovalor) / sum(Autovalor) * 100)
+  
+  vacumgraph <- ggplot(autovalores, aes(x = Componente, y = Varianza_Acumulada)) +
+    geom_bar(stat = "identity", colour = "red", fill = "lightblue", alpha = 0.7) +
+    scale_x_continuous(breaks = 1:nrow(autovalores)) +
+    geom_text(aes(label = round(Varianza_Acumulada, 2)), vjust = -0.5, colour = "darkblue", size = 3) +
+    ggtitle("Varianza Acumulada por Componentes") +
+    xlab("Número de Componente") +
+    ylab("Varianza Acumulada (%)")
+  
+  # Combinar gráficos con patchwork
+  plot_combinado <- autograph / vacumgraph
+  
+  # Crear lista de salida con tablas y gráficos
   resultado_info <- list(
     resumen_componentes = tabla_resumen,
-    pca = pca_result
+    cargas_componentes = tabla_cargas,
+    graficos = plot_combinado
   )
-  return(resultado_info)
+  
+  # Retornar una lista que contiene el PCA y la información
+  return(list(pca = pca_result, info = resultado_info))
 }
-
