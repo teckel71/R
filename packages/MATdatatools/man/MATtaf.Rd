@@ -11,7 +11,7 @@ MATtaf(data, variable, breaks = NULL)
 
 \item{variable}{Variable numérica para la que se calculará la distribución de frecuencias.}
 
-\item{breaks}{(Opcional) Número de intervalos deseados. Si no se especifica, se calcula automáticamente.}
+\item{breaks}{(Opcional) Número de intervalos deseados. Si no se especifica, se calcula automáticamente con Freedman-Diaconis.}
 }
 \value{
 Una lista con la tabla de frecuencias y un histograma, guardada en el entorno global
@@ -20,7 +20,7 @@ con el nombre "\if{html}{\out{<variable>}}_intervalos_frecuencia".
 \description{
 Esta función crea una tabla con la distribución de frecuencias agrupadas en intervalos
 para una variable numérica de un dataframe. Si no se especifica el número de intervalos,
-se utiliza la regla de Sturges para determinarlo automáticamente. Además, genera un histograma
+se utiliza la regla de Freedman-Diaconis para determinarlo automáticamente. Además, genera un histograma
 cuyos intervalos coinciden con los de la tabla.
 }
 \examples{

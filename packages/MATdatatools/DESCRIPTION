@@ -1,19 +1,11 @@
 Package: MATdatatools
-Title: Tratamiento de NAs y outliers en dataframes
+Title: Herramientas de Análisis de Datos
 Version: 0.1.0
-Authors@R: 
-    person("Miguel-Ángel", "Tarancón", , "miguelangel.tarancon@uclm.es", role = c("aut", "cre"))
-Description: detecta y elimina casos con datos faltantes y outliers.
-License: GPL-3
+Authors@R: person("Miguel Ángel Tarancón", email = "miguelangel.tarancon@uclm.es", role = c("aut", "cre"))
+Description: Funciones para análisis de datos, incluyendo análisis descriptivo, manejo de valores faltantes y detección de outliers.
+License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
+NeedsCompilation: no
+Imports: ggplot2, dplyr, knitr, kableExtra, moments, patchwork, nortest, readxl, gtExtras, visdat
 RoxygenNote: 7.3.2
-LazyData: true
-Imports:
-    dplyr,
-    ggplot2,
-    knitr,
-    kableExtra,
-    magrittr,
-    stats,
-    visdat

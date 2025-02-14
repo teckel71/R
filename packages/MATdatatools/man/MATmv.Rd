@@ -4,21 +4,19 @@
 \alias{MATmv}
 \title{MATmv: Manejo de datos con casos completos y NA}
 \usage{
-MATmv(dataframe, columnas)
+MATmv(dataframe, ...)
 }
 \arguments{
 \item{dataframe}{Un dataframe que contiene las variables.}
 
-\item{columnas}{Las columnas que se desean seleccionar. Puede ser una sola variable (sin comillas)
-o un vector de variables.}
+\item{...}{Variables a seleccionar. Pueden ingresarse directamente sin comillas ni vector.}
 }
 \value{
 El nombre del nuevo dataframe con los casos completos.
 }
 \description{
 Esta función selecciona variables de un dataframe, identifica casos completos y crea un resumen
-con información sobre los datos faltantes. Ahora también permite seleccionar una sola variable
-sin necesidad de usar \code{c(...)}.
+con información sobre los datos faltantes. Si no se especifican variables, se utilizan todas las columnas.
 }
 \details{
 La función genera un nuevo dataframe con los casos completos de las columnas seleccionadas
@@ -26,9 +24,9 @@ y una lista de información en el entorno global. La lista contiene una tabla co
 y un gráfico que visualiza los valores faltantes.
 }
 \examples{
-# Usar una sola variable:
-MATmv(dataframe = mtcars, columnas = mpg)
+# Usar todas las variables del dataframe:
+MATmv(mtcars)
 
-# Usar varias variables:
-MATmv(dataframe = mtcars, columnas = c(mpg, hp))
+# Usar varias variables sin comillas ni vector:
+MATmv(mtcars, mpg, hp, wt)
 }

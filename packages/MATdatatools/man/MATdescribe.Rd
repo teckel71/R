@@ -4,23 +4,25 @@
 \alias{MATdescribe}
 \title{MATdescribe: Análisis descriptivo y visual de una variable}
 \usage{
-MATdescribe(data, variable)
+MATdescribe(data, variable, bins = 0)
 }
 \arguments{
 \item{data}{Dataframe que contiene los datos.}
 
 \item{variable}{Variable numérica a analizar (sin comillas).}
+
+\item{bins}{Número de bins para el histograma. Si es 0, se usa el método Freedman-Diaconis.}
 }
 \value{
 Una lista con los resultados del análisis descriptivo, guardada en el entorno global con el nombre "\if{html}{\out{<variable>}}_describe_info".
 }
 \description{
 Esta función realiza un análisis descriptivo y visual detallado para una variable
-de un dataframe, generando histogramas, densidad, boxplots y evaluando la normalidad.
+de un dataframe, generando histogramas, densidad, boxplots y evaluando la normalidad con tres pruebas estadísticas.
 }
 \examples{
-&dontrun{
+\dontrun{
 # Ejemplo de uso
-MATdescribe(data = mtcars, variable = mpg)
+MATdescribe(data = mtcars, variable = mpg, bins = 10)
 }
 }
