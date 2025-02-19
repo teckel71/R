@@ -3,13 +3,13 @@ title: "MATdatatools Guide"
 author: "Miguel-Ángel Tarancón"
 date: "`r Sys.Date()`"
 output:
-  word_document:
-    toc: true
   html_document:
     toc: true
     toc_float: true
     number_sections: true
     always_allow_html: true
+  word_document:
+    toc: true
 ---
 
 ```{r setup, include=FALSE}
@@ -24,7 +24,7 @@ El paquete **MATdatatools** ha sido diseñado para facilitar el análisis de dat
 
 -   Automatización de procesos estadísticos comunes.
 -   Gráficos de alta calidad con interpretaciones claras.
--   Análisis descriptivos, exploración de correlaciones y más.
+-   Análisis descriptivo univariante.
 
 # Funciones de MATdatatools
 
@@ -36,7 +36,6 @@ El paquete incluye las siguientes funciones principales:
 -   **MATout_Mahalanobis:** Identifica valores atípicos multidimensionales basándose en la distancia de Mahalanobis.
 -   **MATdescribe:** Realiza un análisis descriptivo completo, incluyendo gráficos y estadísticos.
 -   **MATtaf:** Genera tablas de frecuencias agrupadas en intervalos y crea histogramas relacionados.
--   **MATcor:** Produce una matriz de correlación gráfica entre variables.
 
 Cada función está diseñada para ser intuitiva y generar resultados listos para interpretar. El archivo de Microsoft(R) Excel(R) de los ejemplos, eolica_100_mv.xls, puede descargarse [aquí](https://docs.google.com/spreadsheets/d/1f9KV5epNpBRM6v9sKPtgFDkzMlOo75Y2/edit?usp=sharing&ouid=115375878280465826079&rtpof=true&sd=true).
 
@@ -81,22 +80,24 @@ Cada función está diseñada para ser intuitiva y generar resultados listos par
 ### Uso:
 
 ``` r
-MATfexcel(file_path, sheet_name, na_values = NULL)
+MATfexcel(file_path, sheet_name, na_values = NULL, viz = FALSE)
 ```
 
 ### Objetivo
 
-Importar datos desde hojas de Excel y convertir la primera columna en nombres de filas.
+Esta función carga datos desde un archivo Excel, convirtiendo la primera columna en nombres de fila y generando un resumen.
 
-### Parámetros
+### Argumentos
 
--   `file_path`: Ruta del archivo de Excel.
--   `sheet_name`: Nombre de la hoja a importar.
--   `na_values`: Valores que deben ser considerados como NA (opcional).
+-   `file_path`: Ruta al archivo Excel.
+-   `sheet_name`: Nombre o índice de la hoja a importar.
+-   `na_values`: Vector de caracteres que representan valores NA.
+-   `viz`: Si es `TRUE`, genera una visualización automática de las variables. Es necesario que no existan NAs.
 
-### Resultados Esperados
+### Salida
 
-Un dataframe con las filas correctamente nombradas.
+-   Dataframe con los datos importados.
+-   Si `viz = TRUE`, genera un objeto con visualización de las variables (`<nombre_dataframe>_viz`). Es necesario que no existan NAs.
 
 ### Ejemplo
 
@@ -105,12 +106,14 @@ rm(list = ls())
 library(MATdatatools)
 
 eolica_100 <- MATfexcel("eolica_100_mv.xlsx", "Datos",
-                        na_values = c("n.d.", "s.d."))
+                        na_values = c("n.d.", "s.d."),
+                        viz = FALSE)
+viz_output
 ```
 
 ### Resultados Esperados
 
-1.  Un dataframe llamado `eolica_100`
+-   Un dataframe llamado `eolica_100`
 
 ```{r, eval=TRUE, echo=FALSE, message=FALSE, warning=FALSE}
 rm(list = ls())
@@ -135,11 +138,6 @@ rm (variables_por_bloque)
 rm (df)
 ```
 
-```{r, eval=TRUE, echo=TRUE, message=FALSE, warning=FALSE}
-readxl::read_excel("eolica_100_mv.xlsx", "Datos",
-                        na = c("n.d.", "s.d."))
-```
-
 ## MATmv
 
 ### Uso:
@@ -150,22 +148,24 @@ MATmv(dataframe, columnas)
 
 ### Objetivo
 
-Filtrar casos completos de un dataframe y mostrar los valores faltantes de manera gráfica.
+Selecciona variables de un dataframe, identifica casos completos y genera un resumen de valores faltantes.
 
-### Parámetros
+### Argumentos
 
--   `dataframe`: El dataframe que se desea analizar.
--   `columnas`: Las columnas (variables) que se desean evaluar (sin comillas).
+-   `dataframe`: Dataframe con las variables.
+-   `...`: Variables a seleccionar (sin comillas ni vector). Si no se especifican las variables, se procesarán todas las variables del dataframe.
 
-### Resultados
+### Salida
 
--   Un nuevo dataframe con los casos completos de las columnas seleccionadas.
--   Gráfico de valores faltantes.
+-   Un nuevo dataframe con los casos completos (`<nombre_original>_sm`).
+-   Una lista con:
+    -   **Tabla de valores faltantes**.
+    -   **Gráfico de valores ausentes**.
 
 ### Ejemplo
 
 ```{r, eval=TRUE, echo=TRUE, message=FALSE, warning=FALSE}
-MATmv(eolica_100, c(RENECO, ACTIVO, RES, RENFIN, FPIOS, MARGEN))
+MATmv(eolica_100, RENECO, ACTIVO, RES, RENFIN, FPIOS, MARGEN)
 ```
 
 ### Resultados Esperados
@@ -213,17 +213,19 @@ MATout(data, variable)
 
 ### Objetivo
 
-Detectar valores atípicos unidimensionales basados en el rango intercuartílico (IQR).
+Detecta outliers en una variable numérica usando el rango intercuartílico (IQR) y los elimina.
 
-### Parámetros
+### Argumentos
 
--   `data`: El dataframe que contiene los datos.
--   `variable`: La variable numérica a analizar (sin comillas).
+-   `data`: Dataframe con los datos.
+-   `variable`: Variable a analizar (sin comillas).
 
-### Resultados
+### Salida
 
--   Identifica valores atípicos y los muestra en un boxplot.
--   Filtra los datos sin valores atípicos.
+-   Un dataframe sin outliers (`<nombre_original>_so`).
+-   Una lista con:
+    -   **Tabla de outliers detectados**.
+    -   **Gráfico de caja (boxplot)**.
 
 ### Ejemplo
 
@@ -277,17 +279,19 @@ MATout_Mahalanobis(data, variables)
 
 ### Objetivo
 
-Detectar valores atípicos multidimensionales usando la distancia de Mahalanobis.
+Usa la distancia de Mahalanobis para detectar y eliminar outliers multivariados en un conjunto de variables.
 
-### Parámetros
+### Argumentos
 
--   `data`: El dataframe que contiene los datos.
--   `variables`: Las variables numéricas para analizar (sin comillas).
+-   `data`: Dataframe con los datos.
+-   `variables`: Variables a incluir en el análisis (sin comillas, separadas por comas).
 
-### Resultados
+### Salida
 
--   Identifica valores atípicos multidimensionales.
--   Filtra los datos sin valores atípicos.
+-   Un dataframe sin outliers (`<nombre_original>_so`).
+-   Una lista con:
+    -   **Tabla de outliers detectados**.
+    -   **Boxplot de distancias de Mahalanobis**.
 
 ### Ejemplo
 
@@ -305,7 +309,7 @@ MATout_Mahalanobis(data = eolica_100_sm,
 
 **Visualización de Resultados:**
 
-```{r, eval=TRUE, echo=TRUE, message=FALSE, warning=FALSE}
+```{r, eval=TRUE, echo=FALSE, message=FALSE, warning=FALSE}
 eolica_100_sm_so_info$Boxplot
 eolica_100_sm_so_info$Outliers_Table
 library(dplyr)
@@ -340,22 +344,22 @@ MATdescribe(data, variable)
 
 ### Objetivo
 
-Realizar un análisis descriptivo completo de una variable numérica.
+Esta función realiza un análisis descriptivo y gráfico detallado de una variable numérica en un dataframe. Incluye histogramas, densidad, boxplots y pruebas de normalidad.
 
-### Parámetros
+### Argumentos
 
--   `data`: El dataframe que contiene los datos.
--   `variable`: La variable numérica a analizar (sin comillas).
+-   `data`: Dataframe que contiene los datos.
+-   `variable`: Variable numérica a analizar (sin comillas).
+-   `bins`: Número de bins para el histograma. Si es 0, o no se especifica, se usa el método Freedman-Diaconis para calcular el número de intervalos de valores en el histograma.
 
-### Resultados
+### Salida
 
--   Gráficos como histogramas, QQ-plots y boxplots.
--   Estadísticos clave como media, desviación típica, y prueba de normalidad.
+Genera un objeto en el entorno global con el nombre `<variable>_describe_info`, que incluye: - **Resumen gráfico** (histograma, densidad, boxplot, QQ-Plot). - **Estadísticos descriptivos** (media, mediana, asimetría, curtosis, etc.). - **Pruebas de normalidad** (Shapiro-Wilk, Kolmogorov-Smirnov, Anderson-Darling).
 
 ### Ejemplo
 
 ```{r, eval=TRUE, echo=TRUE, message=FALSE, warning=FALSE}
-MATdescribe(eolica_100_sm_so, RENECO)
+MATdescribe(eolica_100_sm_so, RENECO, bins = 0)
 ```
 
 ### Resultados Esperados
@@ -363,7 +367,7 @@ MATdescribe(eolica_100_sm_so, RENECO)
 1.  Una lista llamada `RENECO_describe_info` que contiene:
     -   Gráfico resumen con varios paneles.
     -   Tabla de estadísticos descriptivos.
-    -   Resultado de la prueba de normalidad de Shapiro-Wilk (para significación de 0.05).
+    -   Resultado de las pruebas de normalidad de Shapiro-Wilk, Kolmogorov-Smirnov y Anderson-Darling (para significación de 0.05).
 
 **Visualización de Resultados:**
 
@@ -391,11 +395,11 @@ MATtaf(data, variable, breaks = NULL)
 
 Generar una tabla de frecuencias agrupadas en intervalos y un histograma relacionado.
 
-### Parámetros
+### Argumentos
 
--   `data`: El dataframe que contiene los datos.
--   `variable`: La variable numérica para analizar (sin comillas).
--   `breaks`: Número de intervalos (opcional).
+-   `data`: Dataframe con los datos.
+-   `variable`: Variable numérica a analizar.
+-   `breaks`: Número de intervalos (opcional, se calcula automáticamente si no se especifica, mediante el método de Freedman-Diaconis).
 
 ### Resultados
 
@@ -426,54 +430,12 @@ RENECO_intervalos_frecuencia$histograma
 RENECO_intervalos_frecuencia$tabla
 ```
 
-## MATcor
-
-### Uso:
-
-``` r
-MATcor(data, ...)
-```
-
-### Objetivo
-
-Crear una matriz de correlación gráfica.
-
-### Parámetros
-
--   `data`: El dataframe que contiene los datos.
--   `...`: Variables específicas (sin comillas) para incluir en el análisis. Si no se especifican, se usan todas las variables numéricas del dataframe.
-
-### Resultados
-
--   Una matriz de correlación gráfica generada con GGally.
-
-### Ejemplo
-
-```{r, eval=TRUE, echo=TRUE, message=FALSE, warning=FALSE}
-MATcor(eolica_100_sm_so, RENECO, RENFIN, ACTIVO, FPIOS)
-```
-
-### Resultados Esperados
-
-1.  Una lista llamada `eolica_100_sm_so_correlaciones_info` que contiene:
-    -   Gráfico de correlación.
-
-**Visualización de Resultados:**
-
-```{r, eval=TRUE, echo=TRUE, message=FALSE, warning=FALSE}
-eolica_100_sm_so_correlaciones_info$correlaciones
-```
-
-``` r
-eolica_100_sm_so_correlaciones_info$correlaciones
-```
-
 # Documentación del Paquete
 
 -   **Autor:** Miguel Ángel Tarancón miguelangel.tarancon\@uclm.es\
 -   **Versión:** 0.1.0\
 -   **Fecha:** `r Sys.Date()`\
--   **Licencia:** GPL-3
+-   **Licencia:** MIT
 
 # ¡Empieza a explorar tus datos con MATdatatools!
 

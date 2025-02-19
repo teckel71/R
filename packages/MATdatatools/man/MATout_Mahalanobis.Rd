@@ -4,12 +4,12 @@
 \alias{MATout_Mahalanobis}
 \title{Identificación de Outliers Multivariados mediante la Distancia de Mahalanobis}
 \usage{
-MATout_Mahalanobis(data, variables)
+MATout_Mahalanobis(data, ...)
 }
 \arguments{
 \item{data}{Dataframe que contiene los datos a analizar.}
 
-\item{variables}{Variables a incluir en el análisis (sin comillas, separadas por comas).}
+\item{...}{Variables a incluir en el análisis (sin comillas, separadas por comas). Si no se especifican, se procesarán todas las variables numéricas del dataframe.}
 }
 \value{
 La función crea dos objetos en el entorno global:
@@ -29,9 +29,12 @@ Genera un dataframe sin los outliers y proporciona un gráfico de caja y una tab
 \examples{
 \dontrun{
 # Crear un dataframe de ejemplo
-datos <- data.frame(x = rnorm(100), y = rnorm(100))
+datos <- data.frame(x = rnorm(100), y = rnorm(100), z = rnorm(100))
 
-# Detectar outliers multivariados considerando las variables x y y
+# Detectar outliers multivariados considerando todas las variables numéricas
+MATout_Mahalanobis(datos)
+
+# Detectar outliers multivariados considerando solo x e y
 MATout_Mahalanobis(datos, x, y)
 }
 

@@ -4,7 +4,7 @@
 #' Genera un dataframe sin los outliers y proporciona un gráfico de caja y una tabla con los casos detectados como outliers.
 #'
 #' @param data Dataframe que contiene los datos a analizar.
-#' @param variables Variables a incluir en el análisis (sin comillas, separadas por comas).
+#' @param ... Variables a incluir en el análisis (sin comillas, separadas por comas). Si no se especifican, se procesarán todas las variables numéricas del dataframe.
 #'
 #' @return
 #' La función crea dos objetos en el entorno global:
@@ -20,15 +20,18 @@
 #' @examples
 #' \dontrun{
 #' # Crear un dataframe de ejemplo
-#' datos <- data.frame(x = rnorm(100), y = rnorm(100))
+#' datos <- data.frame(x = rnorm(100), y = rnorm(100), z = rnorm(100))
 #'
-#' # Detectar outliers multivariados considerando las variables x y y
+#' # Detectar outliers multivariados considerando todas las variables numéricas
+#' MATout_Mahalanobis(datos)
+#'
+#' # Detectar outliers multivariados considerando solo x e y
 #' MATout_Mahalanobis(datos, x, y)
 #' }
 #'
 #' @import dplyr ggplot2 knitr kableExtra
 #' @export
-MATout_Mahalanobis <- function(data, variables) {
+MATout_Mahalanobis <- function(data, ...) {
   # Verificar si los paquetes necesarios están instalados y cargarlos
   if (!requireNamespace("dplyr", quietly = TRUE)) install.packages("dplyr")
   if (!requireNamespace("ggplot2", quietly = TRUE)) install.packages("ggplot2")
@@ -40,9 +43,14 @@ MATout_Mahalanobis <- function(data, variables) {
   library(knitr)
   library(kableExtra)
 
-  # Convertir nombres de variables a texto si no lo son
-  variables <- sapply(substitute(variables)[-1], deparse)
-
+  # Obtener las variables
+  variables <- sapply(substitute(list(...))[-1], deparse)
+  
+  # Si no se especifican variables, usar todas las numéricas
+  if (length(variables) == 0) {
+    variables <- names(select(data, where(is.numeric)))
+  }
+  
   # Obtener el nombre del dataframe de entrada
   original_name <- deparse(substitute(data))
 
@@ -104,9 +112,9 @@ MATout_Mahalanobis <- function(data, variables) {
   assign(new_data_name, data_clean, envir = .GlobalEnv)
   assign(info_list_name, list(Outliers_Table = outliers_table, Boxplot = boxplot), envir = .GlobalEnv)
 
-  # Eliminar objetos temporales para mantener limpio el entorno global
+   # Eliminar objetos temporales para mantener limpio el entorno global
   rm(list = ls()[!ls() %in% c(new_data_name, info_list_name)], envir = .GlobalEnv)
-
+  
   # Mensaje de confirmación
   message(paste0("Análisis completado. Los resultados se guardaron como: ", new_data_name, " y ", info_list_name))
 }
