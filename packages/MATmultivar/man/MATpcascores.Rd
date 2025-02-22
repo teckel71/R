@@ -4,19 +4,19 @@
 \alias{MATpcascores}
 \title{MATpcascores: Obtención de puntuaciones de componentes principales}
 \usage{
-MATpcascores(data, pca_object, num_comp, num_cases = 0, ...)
+MATpcascores(data, pca_object, Nscores = NULL, Rank = 10)
 }
 \arguments{
-\item{data}{Dataframe original.}
+\item{data}{Dataframe de entrada (puede ser diferente al original).}
 
 \item{pca_object}{Objeto resultante de prcomp().}
 
-\item{num_comp}{Número de componentes a extraer.}
+\item{Nscores}{Número de componentes principales a extraer (por defecto todas).}
 
-\item{num_cases}{Número de casos a mostrar.}
+\item{Rank}{Número de casos a mostrar en tablas y gráficos (por defecto 10).}
 }
 \value{
-Lista con el dataframe de puntuaciones y tabla formateada.
+Lista con el dataframe de puntuaciones, tabla formateada y gráfico.
 }
 \description{
 Calcula y devuelve puntuaciones de componentes principales de un PCA previamente realizado.
