@@ -1,5 +1,3 @@
-# Archivo: R/MATpca.R
-
 #' MATpca: Análisis de Componentes Principales
 #'
 #' Realiza un Análisis de Componentes Principales (PCA) sobre variables métricas.
@@ -47,14 +45,18 @@ MATpca <- function(data, ...) {
   # Análisis de Componentes Principales con escalado
   pca_result <- prcomp(selected_data, scale = TRUE)
   
-  # Generar resumen de componentes
-  summary_df <- as.data.frame(t(pca_result$sdev^2 / sum(pca_result$sdev^2) * 100))
-  colnames(summary_df) <- paste0("PC", 1:ncol(summary_df))
-  summary_df <- rbind(
-    "Desviación típica" = pca_result$sdev,
-    "Proporción de varianza" = summary_df[1, ],
-    "Varianza acumulada" = cumsum(summary_df[1, ])
+  # Calcular proporción de varianza explicada y varianza acumulada
+  proporcion_varianza <- (pca_result$sdev^2 / sum(pca_result$sdev^2)) * 100
+  
+  # Crear tabla de resumen de componentes con la corrección integrada
+  summary_df <- data.frame(
+    `Desviación típica` = pca_result$sdev,
+    `Proporción de varianza` = proporcion_varianza,
+    `Varianza acumulada` = cumsum(proporcion_varianza)
   )
+  
+  # Renombrar columnas acorde a los componentes principales
+  colnames(summary_df) <- paste0("PC", 1:ncol(summary_df))
   
   # Crear tabla con kable
   tabla_resumen <- summary_df %>%
