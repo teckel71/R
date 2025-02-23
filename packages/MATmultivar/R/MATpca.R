@@ -45,14 +45,13 @@ MATpca <- function(data, ...) {
   # Análisis de Componentes Principales con escalado
   pca_result <- prcomp(selected_data, scale = TRUE)
   
-  # Calcular proporción de varianza explicada y varianza acumulada
-  proporcion_varianza <- (pca_result$sdev^2 / sum(pca_result$sdev^2)) * 100
+  # Generar resumen de componentes con nombres de fila preservados
+  prop_varianza <- (pca_result$sdev^2 / sum(pca_result$sdev^2)) * 100
   
-  # Crear tabla de resumen de componentes con la corrección integrada
-  summary_df <- data.frame(
-    `Desviación típica` = pca_result$sdev,
-    `Proporción de varianza` = proporcion_varianza,
-    `Varianza acumulada` = cumsum(proporcion_varianza)
+  summary_df <- rbind(
+    "Desviación típica" = pca_result$sdev,
+    "Proporción de varianza" = prop_varianza,
+    "Varianza acumulada" = cumsum(prop_varianza)  # 🔥 Aquí se corrigió el cálculo
   )
   
   # Renombrar columnas acorde a los componentes principales
